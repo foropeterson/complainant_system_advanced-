@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTCL Complaint Center</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        /* Slideshow Background */
+        .slideshow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* Ensure it's behind overlay and other content */
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: fade 20s infinite;
+        }
+
+        .slide:nth-child(1) {
+            background-image: url('assets/trees.jpg');
+            animation-delay: 0s;
+        }
+
+        .slide:nth-child(2) {
+            background-image: url('assets/aix.jpg');
+            animation-delay: 5s;
+        }
+
+        .slide:nth-child(3) {
+            background-image: url('assets/ai.jpg');
+            animation-delay: 10s;
+        }
+
+        .slide:nth-child(4) {
+            background-image: url('assets/sin.jpg');
+            animation-delay: 15s;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            25% {
+                opacity: 1;
+            }
+
+            35% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Overlay Styling */
+        .slideshow-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+            z-index: -1; /* Just above the slideshow but below other content */
+        }
+
+        /* Body Styling */
+        body {
+            background: none; /* Remove existing background */
+            color: #333; /* Change text color for better contrast */
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            position: fixed; /* Fixed position for better visibility */
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.85); /* Increased opacity for better contrast */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000; /* Ensure navbar stays above other content */
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link {
+            color: #2980b9;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: #8e44ad;
+        }
+
+        /* Header Styling */
+        .header {
+            text-align: center;
+            margin: 100px 0 50px 0; /* Adjusted margin to account for fixed navbar */
+            z-index: 5;
+            position: relative;
+        }
+
+        /* Main Form Styling */
+        .mainform {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 2rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95); /* Increased opacity for better visibility */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+            z-index: 5;
+            position: relative;
+            border: 1px solid #ccc; /* Subtle border */
+        }
+
+        /* Form Elements */
+        .form-group label {
+            color: #222; /* Darker labels */
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            color: #333; /* Dark text in inputs */
+        }
+
+        .form-control::placeholder {
+            color: #888; /* Gray placeholders */
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background-color: #2980b9;
+            border: none;
+            color: #fff;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #1f6391;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            border: none;
+            color: #fff;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Loading Spinner Styling */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            z-index: 10; /* Above form */
+        }
+
+        .loading .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+            color: #2980b9; /* Primary color */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mainform {
+                width: 90%;
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .navbar-nav {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Smooth Transitions */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Thank You Section */
+        #thankYou {
+            text-align: center;
+            z-index: 5;
+            position: relative;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.8); /* Light background for visibility */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Additional Styling for Active Links */
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+            border-bottom: 2px solid #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Slideshow Background -->
+    <div class="slideshow-container">
+        <div class="slide"></div>
+        <div class="slide"></div>
+        <div class="slide"></div>
+        <div class="slide"></div>
+    </div>
+    <!-- Overlay -->
+    <div class="slideshow-overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#home">PTCL Complaint Center</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#submitComplaint">Submit Complaint</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#viewComplaints">View Complaints</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Welcome to the PTCL Complaint Center</h1>
+        <p>We are here to assist you with your complaints.</p>
+    </div>
+
+    <!-- Complaint Form -->
+    <div class="mainform fade-in" id="submitComplaint">
+        <h2>Submit Your Complaint</h2>
+        <form id="complaintForm">
+            <div class="form-group">
+                <label for="complaintText">Your Complaint:</label>
+                <textarea class="form-control" id="complaintText" rows="4" placeholder="Describe your complaint here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="loading" id="loading">
+                <div class="spinner-border" role="status"></div>
+                <p>Submitting...</p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Thank You Message -->
+    <div id="thankYou" style="display:none;">
+        <h3>Thank You!</h3>
+        <p>Your complaint has been submitted successfully.</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rTq8yMRAHbbE5gT6F7QxWzI8pRfeOnzGt4Q6SQHeUGhDmrGIOBd" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-JZ5Z1cZ+Rl6e5YOReMIM5lj2GAU3FV3mnDGrSbiIxlO4Ggt/Od3QKh7Ky3eQhSde" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-2y7Yz6FfNZZmH1h2OhjSTaym8H9eL5/ZmXJ6G8Tz3Z1e5A0h5VP1ef9tPb8DqEKj" crossorigin="anonymous"></script>
+
+    <script>
+        // JavaScript for form submission and loading spinner
+        const form = document.getElementById('complaintForm');
+        const loading = document.getElementById('loading');
+        const thankYou = document.getElementById('thankYou');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            loading.style.display = 'block';
+            // Simulating form submission
+            setTimeout(() => {
+                loading.style.display = 'none';
+                thankYou.style.display = 'block';
+                form.reset(); // Reset form after submission
+            }, 2000);
+        });
+
+        // Change navbar background on scroll
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+
+</html>
